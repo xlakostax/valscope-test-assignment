@@ -40,7 +40,7 @@ export default class App extends Component {
     GoogleAuth.signIn(
       /* Profile email is requested */
       {
-        scope: 'profile email'
+        scope: 'profile email',
       }
     ).then(authOk, authErr);
   }

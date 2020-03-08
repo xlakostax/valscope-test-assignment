@@ -1,0 +1,15 @@
+{
+  "data" : [ null, {
+    "town" : "Oulu",
+    "address" : "Lepakkotie 1"
+  }, {
+    "town" : "Tampere",
+    "address" : "Kotitie 3"
+  }, {
+    "town" : "Turku",
+    "address" : "Kauppapolku 2"
+  }, {
+    "town" : "Helsinki",
+    "address" : "Siilitie 4"
+  } ]
+}

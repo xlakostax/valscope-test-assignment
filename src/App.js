@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import firebaseConfig, { auth, provider } from './firebase.js';
 
 let log = console.log
 export default class App extends Component {
@@ -6,6 +7,8 @@ export default class App extends Component {
     super();
     this.state = {
       name: null,
+      data: [],
+      user: null
     }
   }
   componentDidMount = () => {
@@ -18,7 +21,34 @@ export default class App extends Component {
           /* Hide acces key to environment variables. With create-react-app, you need to  prefix REACT_APP_ to the variable name to be able to access it. */
           client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
         })
-        .then(() => log(`init OK`), () => log(`init ERROR`))
+        .then(() => log(`init OK`), () => log(`init ERROR`));
+    });
+    this.updateList();
+  }
+
+  updateList = () => {
+    const data = firebaseConfig.database().ref();
+    // console.log(data)
+    data.on( 'child_added', ( snapshot ) => {
+      /* snapshot.val() contains an object of objects from the Database:
+      { {}, {}, ... , {} } */
+      let obj = snapshot.val();
+      // console.log( obj )
+      for (let key in obj) {
+         obj[ key ][ 'id' ] = key;
+      }
+
+      let data = [];
+      for (let key in obj) {
+          data.push( obj[ key ] )
+      }
+      // console.log( typeof data )
+      // console.log( data )
+
+      this.setState( {
+         data: data
+      })
+      console.log( this.state.data )
     });
   }
 
@@ -59,11 +89,20 @@ export default class App extends Component {
 
   render() {
     let { name } = this.state;
+    let history = this.state.data.map( ( element ) => {
+        return (
+          <article key = { element.id }>
+            <p>{ element.town }</p>
+            <p>{ element.address }</p>
+          </article>
+        )
+    })
     return (
       <div className="App">
         <h1>GAuth</h1>
         {name && <p>Hi, {name}!</p>}
-        {!name ? <button onClick = { this.signIn }>Log in</button> : <button onClick = { this.signOut }>Log out</button>}
+        {!name ? <div id = 'g-signin2' onClick = { this.signIn }>Log in</div> : <button onClick = { this.signOut }>Log out</button>}
+        {history}
       </div>
     );
   }

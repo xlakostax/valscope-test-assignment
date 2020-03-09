@@ -7,13 +7,14 @@ export default class App extends Component {
     super();
     this.state = {
       name: null,
-      data: [],
+      id: null,
+      usersDb: [],
       user: null
     }
   }
   componentDidMount = () => {
     /* Plug in google sign-in library */
-    /* The ligrary is global, but nobody know about it, even react, so use global object 'window', which provides variables and functions to be accessible at any place of the app */
+    /* The library is global, but nobody know about it, even react, so use global object 'window', which provides variables and functions to be accessible at any place of the app */
     window.gapi.load('auth2', function() {
     /* Make a call to gapi.auth2 (!!! obligatory before calling gapi.auth2.GoogleAuth's methods !!!) and initialize GoogleAuth object it with .init */
       window.gapi.auth2
@@ -23,7 +24,6 @@ export default class App extends Component {
         })
         .then(() => log(`init OK`), () => log(`init ERROR`));
     });
-    this.updateList();
   }
 
   updateList = () => {
@@ -34,21 +34,21 @@ export default class App extends Component {
       { {}, {}, ... , {} } */
       let obj = snapshot.val();
       // console.log( obj )
-      for (let key in obj) {
-         obj[ key ][ 'id' ] = key;
-      }
+      // for (let key in obj) {
+      //    obj[ key ][''] = key;
+      // }
 
-      let data = [];
+      let usersDb = [];
       for (let key in obj) {
-          data.push( obj[ key ] )
+          usersDb.push( obj[ key ] )
       }
-      // console.log( typeof data )
-      // console.log( data )
+      // console.log( typeof usersDb )
+      // console.log( usersDb )
 
       this.setState( {
-         data: data
+         usersDb: usersDb
       })
-      console.log( this.state.data )
+      console.log( this.state.usersDb )
     });
   }
 
@@ -62,8 +62,10 @@ export default class App extends Component {
     const authOk = (user) => {
       log(`Auth OK`, user);
       log(user.getBasicProfile().getName());
+      log(user.getBasicProfile().getId());
       this.setState({
-        name: user.getBasicProfile().getName()
+        name: user.getBasicProfile().getName(),
+        id: user.getBasicProfile().getId()
       })
     }
     const authErr = () => log(`Auth ERROR`)
@@ -73,6 +75,7 @@ export default class App extends Component {
         scope: 'profile email',
       }
     ).then(authOk, authErr);
+    this.updateList();
   }
 
   signOut = () => {
@@ -89,20 +92,30 @@ export default class App extends Component {
 
   render() {
     let { name } = this.state;
-    let history = this.state.data.map( ( element ) => {
+    let userTodos = this.state.usersDb.filter( (element) => {
+      return (
+        element.id === this.state.id
+      )
+    })
+    .map( (element) => {
         return (
           <article key = { element.id }>
-            <p>{ element.town }</p>
-            <p>{ element.address }</p>
+            <p>{ element.name }</p>
+            { element.todo.map( (element) => {
+              return (
+                <>
+                  <p>{ element.todo }</p>
+                  <date>{ element.date }</date>
+                </>
+              )
+            } ) }
           </article>
         )
     })
     return (
       <div className="App">
-        <h1>GAuth</h1>
-        {name && <p>Hi, {name}!</p>}
-        {!name ? <div id = 'g-signin2' onClick = { this.signIn }>Log in</div> : <button onClick = { this.signOut }>Log out</button>}
-        {history}
+        {name && <div><p>Hi, {name}!</p><div>{userTodos}</div></div> }
+        {!name ? <button id = 'g-signin2' onClick = { this.signIn }>Log in with Google</button> : <button onClick = { this.signOut }>Log out</button>}
       </div>
     );
   }

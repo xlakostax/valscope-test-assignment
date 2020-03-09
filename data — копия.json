@@ -1,0 +1,15 @@
+{
+  "data" : [ null, {
+    "todo" : "To kill all the enemies",
+    "id" : 1,
+	"date" : "21.04.2020"
+  }, {
+    "todo" : "To forge Valyrian steel",
+    "id" : 2,
+	"date" : "13.06.2020"
+  }, {
+    "todo" : "To tame the Unicorn",
+    "id" : 3,
+	"date" : "01.04.2020"
+  } ]
+}

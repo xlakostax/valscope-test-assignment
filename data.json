@@ -1,15 +1,36 @@
 {
-  "data" : [ null, {
-    "town" : "Oulu",
-    "address" : "Lepakkotie 1"
-  }, {
-    "town" : "Tampere",
-    "address" : "Kotitie 3"
-  }, {
-    "town" : "Turku",
-    "address" : "Kauppapolku 2"
-  }, {
-    "town" : "Helsinki",
-    "address" : "Siilitie 4"
-  } ]
+  "users": [
+      {
+        "id": "1",
+        "name": "Maria",
+        "todo": [
+          {
+            "todo" : "To kill all the enemies",
+	          "date" : "21.04.2020"
+          },
+          {
+          "todo" : "To forge Valyrian steel",
+        	"date" : "13.06.2020"
+          },
+          {
+            "todo" : "To tame the Unicorn",
+          	"date" : "01.04.2020"
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Anton",
+        "todo": [
+          {
+            "todo" : "Lorem",
+	          "date" : "21.04.2020"
+          },
+          {
+          "todo" : "Ipsum",
+        	"date" : "13.06.2020"
+          }
+        ]
+      }
+    ]
 }

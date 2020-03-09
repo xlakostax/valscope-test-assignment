@@ -2,14 +2,17 @@ import React, { Component } from 'react';
 import firebaseConfig, { auth, provider } from './firebase.js';
 
 let log = console.log
-export default class App extends Component {
+
+export default class Login extends Component {
   constructor() {
     super();
     this.state = {
       name: null,
+      // fullname: null,
       id: null,
       usersDb: [],
-      user: null
+      email: null,
+      password: null
     }
   }
   componentDidMount = () => {
@@ -80,7 +83,8 @@ export default class App extends Component {
 
   signOut = () => {
     const GoogleAuth = window.gapi.auth2.getAuthInstance();
-    GoogleAuth.signOut().then(
+    GoogleAuth.signOut()
+    .then(
       () => {
         log(`signOut OK`);
         this.setState({
@@ -90,8 +94,46 @@ export default class App extends Component {
       () => log(`signOut ERROR`))
   }
 
+  onChangeHandler = event => {
+    let name = event.target.name;
+    let value = event.target.value;
+    this.setState({
+      [name]: value /* The ES6 computed property name syntax is used to update the state key corresponding to the given input name:*/
+    });
+    log(this.state.email)
+  };
+
+  login = (event) => {
+    event.preventDefault();
+    let password = this.state.password;
+    let email = this.state.email;
+    console.log(this.state.email)
+    const loginOk = (user) => {
+      log(`Auth OK`, user);
+    }
+    const loginErr = () => log(`Auth ERROR`)
+    // const { email, password } = event.target.elements;
+    firebaseConfig.auth()
+            .signInWithEmailAndPassword(email, password)
+            // .then(loginOk, loginErr);
+            .then(
+              firebaseConfig.auth().onAuthStateChanged((user) => {
+                if (user) {
+                  // User logged in already or has just logged in.
+                  log(user.uid)
+                  this.setState({
+                    id: user.uid,
+                    name: user.name
+                  })
+                } else {
+                  // User not logged in or has just logged out.
+                }
+              })
+            )
+  }
+
   render() {
-    let { name } = this.state;
+    let { name, id } = this.state;
     let userTodos = this.state.usersDb.filter( (element) => {
       return (
         element.id === this.state.id
@@ -113,9 +155,40 @@ export default class App extends Component {
         )
     })
     return (
-      <div className="App">
-        {name && <div><p>Hi, {name}!</p><div>{userTodos}</div></div> }
-        {!name ? <button id = 'g-signin2' onClick = { this.signIn }>Log in with Google</button> : <button onClick = { this.signOut }>Log out</button>}
+      <div className='App'>
+        {name &&
+          <div>
+            <p>Hi, {name}!</p>
+            <div>{userTodos}</div>
+            <button onClick = { this.signOut }>Log out</button>
+          </div>
+        }
+        {!name &&
+          <div>
+            <button id = 'g-signin2' onClick = { this.signIn }>Log in with Google</button>
+            <form onSubmit = {this.login}>
+              <label>
+                Email
+                <input
+                  name='email'
+                  type='email'
+                  onChange={this.onChangeHandler}
+                  required
+                />
+              </label>
+              <label>
+                Password
+                <input
+                  name='password'
+                  type='password'
+                  onChange={this.onChangeHandler}
+                  required
+                />
+              </label>
+              <button type='submit'>Log In</button>
+            </form>
+          </div>
+        }
       </div>
     );
   }

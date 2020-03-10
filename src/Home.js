@@ -1,7 +1,24 @@
 import React, { Component } from 'react';
 import firebaseConfig from './firebase.js';
+import styled from 'styled-components';
+
 
 let log = console.log
+
+const Wrapper = styled.div`
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-itens: center;
+  & h3, form, button {
+    margin: 1rem 0;
+  }
+  & button, input {
+    width: 50vw;
+    max-width: 21rem;
+  }
+`;
 
 export default class Home extends Component {
   constructor() {
@@ -16,7 +33,7 @@ export default class Home extends Component {
   }
 
   componentDidMount = () => {
-    console.log(this.state.email)
+    // log(this.state.email)
     /* Plug in google sign-in library */
     /* The library is global, but nobody know about it, even react, so use global object 'window', which provides variables and functions to be accessible at any place of the app */
     window.gapi.load('auth2', function() {
@@ -27,20 +44,20 @@ export default class Home extends Component {
         client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
       })
       .then(
-        () => log(`init OK`),
-        () => log(`init ERROR`)
+        // () => log(`init OK`),
+        // () => log(`init ERROR`)
       );
     });
   };
 
   updateList = () => {
     const data = firebaseConfig.database().ref();
-    // console.log(data)
+    // log(data)
     data.on( 'child_added', ( snapshot ) => {
       /* snapshot.val() contains an object of objects from the Database:
       { {}, {}, ... , {} } */
       let obj = snapshot.val();
-      // console.log( obj )
+      // log( obj )
       // for (let key in obj) {
       //    obj[ key ][''] = key;
       // }
@@ -48,14 +65,14 @@ export default class Home extends Component {
       for (let key in obj) {
           usersDb.push( obj[ key ] )
       }
-      // console.log( typeof usersDb )
-      // console.log( usersDb )
+      // log( typeof usersDb )
+      // log( usersDb )
 
       this.setState( {
          usersDb: usersDb
       })
-      console.log( this.state.usersDb )
-      console.log( this.state.name )
+      // log( this.state.usersDb )
+      // log( this.state.name )
     });
   }
 
@@ -65,7 +82,7 @@ export default class Home extends Component {
     this.setState({
       [key]: value /* The ES6 computed property name syntax is used to update the state key corresponding to the given input name:*/
     });
-    log(this.state.email)
+    // log(this.state.email)
   };
 
   signUpWithEmail = (event) => {
@@ -94,7 +111,7 @@ export default class Home extends Component {
     event.preventDefault();
     let password = this.state.password;
     let email = this.state.email;
-    console.log(this.state.email)
+    // log(this.state.email)
     // const signInWithEmailOk = (user) => {
     //   log(`Auth OK`, user);
     // }
@@ -105,9 +122,8 @@ export default class Home extends Component {
       .then(() => {
         let uid = firebaseConfig.auth().currentUser.uid;
         firebaseConfig.auth().onAuthStateChanged((user) => {
-          log(`user.uid: ${user.uid}`)
-          log('Auth OK')
-
+          // log(`user.uid: ${user.uid}`)
+          // log('Auth OK')
           this.setState({
             id: user.uid
           })
@@ -155,7 +171,7 @@ export default class Home extends Component {
     GoogleAuth.signOut()
     .then(
       () => {
-        log(`signOut OK`);
+        // log(`signOut OK`);
         this.setState({
           password: '',
           email: '',
@@ -164,7 +180,8 @@ export default class Home extends Component {
           usersDb: [],
         })
       },
-      () => log(`signOut ERROR`))
+      // () => log(`signOut ERROR`)
+    )
   }
 
   render() {
@@ -191,18 +208,18 @@ export default class Home extends Component {
     return (
       <>
         {id &&
-          <div>
+          <Wrapper className = 'wrapper'>
             <p>Hi, {id}!</p>
             <div>{userTodos}</div>
             <button onClick = { this.signOut }>Log out</button>
-          </div>
+          </Wrapper>
         }
         {!id &&
-          <div>
+          <Wrapper>
             <h3>Sign up with email and password</h3>
             <form onSubmit = {this.signUpWithEmail}>
               <label>
-                Email
+                <p>Email</p>
                 <input
                   name='email'
                   type='email'
@@ -211,7 +228,7 @@ export default class Home extends Component {
                 />
               </label>
               <label>
-                Password
+                <p>Password</p>
                 <input
                   name='password'
                   type='password'
@@ -220,24 +237,23 @@ export default class Home extends Component {
                 />
               </label>
               <label>
-                Name
+                <p>Name</p>
                 <input
                   name='name'
                   type='text'
                   onChange={this.onChangeHandler}
                   required
                 />
-              </label>
+              </label><br />
               <button type='submit'>Sign Up</button>
             </form>
-            <br />
             <h3>Do already have an account?</h3>
             <p>Sign in with Google...</p>
             <button id = 'g-signin2' onClick = { this.signInWithGoogle }>Log in with Google</button>
             <p>...or email and password</p>
             <form onSubmit = {this.signInWithEmail}>
               <label>
-                Email
+                <p>Email</p>
                 <input
                   name='email'
                   type='email'
@@ -246,7 +262,7 @@ export default class Home extends Component {
                 />
               </label>
               <label>
-                Password
+                <p>Password</p>
                 <input
                   name='password'
                   type='password'
@@ -254,9 +270,10 @@ export default class Home extends Component {
                   required
                 />
               </label>
+              <br />
               <button type='submit'>Log In</button>
             </form>
-          </div>
+          </Wrapper>
         }
       </>
     )

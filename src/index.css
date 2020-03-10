@@ -1,0 +1,57 @@
+/* Style reset starts */
+
+/* box sizing */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  padding: 0;
+}
+
+/* remove (outer) margins */
+body,
+h3,
+p {
+  margin: 0;
+}
+
+/* defaul settings for body */
+body, html {
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+/* inherited fonts for inputs and buttons */
+input,
+button {
+  font: inherit;
+}
+
+::-webkit-scrollbar {
+  background: transparent;
+  width: 0;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  position: relative;
+}
+
+#root {
+  display: grid;
+    display: -ms-grid;
+  grid-template-areas:
+    "header header header"
+    "asideLeft main asideRight"
+    "footer footer footer";
+  grid-template-columns: 35% 1fr 35%;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100vh;
+}
+
+h3 {
+  text-transform: uppercase;
+}
